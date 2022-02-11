@@ -1,85 +1,47 @@
-//function to set name
-var getPlayerName = function() {
-    var name = "";
-
-    while (name === "" || name === null) {
-        name = prompt("What is your robot's name?");
-    }
-
-    console.log("Your robot's name is " + name);
-    return name;
-}
-
-var playerInfo = {
-    name :getPlayerName(),
-    // name: window.prompt("What is your robot's name?"),
-    health: 100,
-    attack: 10,
-    money: 10,
-    reset: function() {
-        this.health = 100;
-        this.money = 10;
-        this.attack = 10;
-    },
-    refillHealth: function() {
-        if(this.money >= 7) {
-            window.alert("Refilling player's health by 20 for 7 dollars.");
-            this.health += 20;
-            this.money -= 7;
-        } else {
-            window.alert("You don't have enough money!");
-        }
-    }, 
-    upgradeAttack: function() {
-        if(this.money >= 7) {
-            window.alert("Upgrading player's attack by 6 for 7 dollars.");
-            this.attack += 6;
-            this.money -= 7;
-        } else {
-            window.alert("You don't have enough money!");
-        }
-    }
-};
-
-
-// console.log(enemyNames);
-// console.log(enemyNames.length);
-// console.log(enemyNames[0]);
-// console.log(enemyNames[3]);
-
-// var fight = function(enemy) {
-//     while (enemy.health > 0) {
-//         debugger;
-//         for(var i = 0; i < enemyNames.length; i++) {
-//             fight(enemyNames[i]);
-//         }
-//    }
-// }
-
 //function to generate a random numeric value
 var randomNumber = function(min, max) {
     var value = Math.floor(Math.random() * (max - min + 1) + min);
+
     return value;
 };
 
-var fight = function(enemy) {
-    while (playerInfo.health > 0 && enemy.health > 0) {
-        var promptFight = window.prompt('Would you like to FIGHT or SKIP this battle? Enter "FIGHT" or "SKIP" to choose.');
+//function to check if player wants to fight or skip
+var fightOrSkip = function() {
+    //ask player if they'd like to fight or skip using fightOrSkip function
+    var promptFight = window.prompt("Would you like to FIGHT or SKIP this round? Enter 'FIGHT' or 'SKIP' to choose.");
+    
+    //conditional recursive function call
+    if(promptFight === "" || promptFight === null) {
+        window.alert("You need to provide a valid answer! Please try again.");
+        return fightOrSkip();
+    }
 
-    //if player picks "skip" confirm and then stop the loop
-    if (promptFight === "skip" || promptFight === "SKIP") {
+    //convert promptFight to all lowecase so we can check with less options
+    promptFight = promptFight.toLowerCase();
+    if (promptFight === "skip") {
         //confirm player wants to skip
         var confirmSkip = window.confirm("Are you sure you'd like to quit?");
+
         //if yes (true), leave fight
-        if (confirmSkip) {
-            window.alert(playerInfo.name + ' has decided to skip this fight. Goodbye!');
-            //subtract money from playerInfo.money for skipping
+        if(confirmSkip) {
+            window.alert(playerInfo.name + " has decided to skip this fight. Goodbye!");
+            //subtract money from playerMoney for skipping, but don't let them go into the negative
             playerInfo.money = Math.max(0, playerInfo.money - 10);
-            console.log("playerInfo.money", playerInfo.money)
-            break;
+            // shop();
+            //return true if player wants to leave
+            return true;
         }
     }
-    //generate random damage value based on player's attack power
+    return false;
+};
+
+// var fight = function(enemy) {
+    while (playerInfo.health > 0 && enemy.health > 0) {
+    //ask player if they'd like to fight or skip using fightOrSkip function
+    if(fightOrSkip()) {
+        //if true, leave fight by breaking loop
+        break;
+    }
     var damage = randomNumber(playerInfo.attack - 3, playerInfo.attack);
 
     enemy.health = Math.max(0, enemy.health - damage);
@@ -115,7 +77,7 @@ var fight = function(enemy) {
         window.alert(playerInfo.name + ' still has ' + playerInfo.health + ' health left.');
     }
 }
-}
+
 
 var startGame = function() {
     //reset player stats
@@ -197,6 +159,48 @@ var shop = function() {
     }
 };
 
+//function to set name
+var getPlayerName = function() {
+    var name = "";
+
+    while (name === "" || name === null) {
+        name = prompt("What is your robot's name?");
+    }
+
+    console.log("Your robot's name is " + name);
+    return name;
+}
+
+var playerInfo = {
+    name :getPlayerName(),
+    health: 100,
+    attack: 10,
+    money: 10,
+    reset: function() {
+        this.health = 100;
+        this.money = 10;
+        this.attack = 10;
+    },
+    refillHealth: function() {
+        if(this.money >= 7) {
+            window.alert("Refilling player's health by 20 for 7 dollars.");
+            this.health += 20;
+            this.money -= 7;
+        } else {
+            window.alert("You don't have enough money!");
+        }
+    }, 
+    upgradeAttack: function() {
+        if(this.money >= 7) {
+            window.alert("Upgrading player's attack by 6 for 7 dollars.");
+            this.attack += 6;
+            this.money -= 7;
+        } else {
+            window.alert("You don't have enough money!");
+        }
+    }
+};
+
 var enemyInfo = [
     {
         name: "Roborto",
@@ -212,20 +216,5 @@ var enemyInfo = [
     }
 ];
 
-//start the game when the page loads
+//run game!
 startGame();
-
-//wrap the game logic in a startGame() function
-//when the player is defeated or there are no more enemies, call an endGame() function that 
-    //alerts the player's total stats
-    //asks the player if they want to play again
-    //if yes, call startGame() to restart the game
-//after the player skips or defeats an enemy (and there are still more robots to fight)
-    //ask the player if they want to "shop" 
-    //if no, continue as normal
-    //if yes, call the shop() function
-    //in the shop() function, ask player if they want to "refill" health, "upgrade" attack, or "leave" the shop
-    //if refill, subtract money points from player and increase health
-    //if upgrade, subtract money points from player and increase attack power
-    //if leave, alert goodbye and exit the function
-    //any other invalid option, call shop() again
